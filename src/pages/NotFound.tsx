@@ -5,13 +5,7 @@ export default function NotFound() {
     <div className="py-20 text-center">
       <pre className="inline-block text-left text-sm leading-tight text-ink-muted">
 {`
-       .--.
-      |o_o |
-      |:_/ |
-     //   \\ \\
-    (|     | )
-   /'\\_   _/\`\\
-   \\___)=(___/
+    Try to find your way back to shore, but beware of the treacherous waves and hidden dangers lurking in the depths.
 `}
       </pre>
       <h1 className="mb-2 mt-5 text-5xl font-bold">404</h1>
