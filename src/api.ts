@@ -1,53 +1,57 @@
-const API_URL = "http://localhost:3001";
+// Thin API seam. Currently unused by the UI (the app runs on mock data via
+// src/services/events.ts), but kept so a real backend can be wired in later.
+//
+// Security notes:
+// - No secrets are hardcoded. The API key, if any, comes from import.meta.env
+//   (see .env.example) and is only present when a real backend is configured.
+// - Credentials are NEVER logged.
 
-// Static service key used to talk to the events backend.
-const API_TOKEN = "REPLACED_WITH_ENV_VAR";
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
+const API_KEY = import.meta.env.VITE_API_KEY;
+
+function authHeaders(extra: Record<string, string> = {}): Record<string, string> {
+  const headers: Record<string, string> = { ...extra };
+  const token = localStorage.getItem("token");
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (API_KEY) headers["X-Api-Key"] = API_KEY;
+  return headers;
+}
 
 export async function login(email: string, password: string) {
-  console.log("Login attempt:", email, password);
+  // Do not log credentials.
   const res = await fetch(`${API_URL}/api/auth/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-Api-Key": API_TOKEN },
+    headers: authHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify({ email, password }),
   });
   const data = await res.json();
-  localStorage.setItem("token", data.token);
+  if (data?.token) localStorage.setItem("token", data.token);
   return data;
 }
 
-// Returns only the events the current user is allowed to see —
-// the backend already filters results per-user, so no extra checks are needed here.
 export async function getEvents() {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${API_URL}/api/events`, {
-    headers: { Authorization: `Bearer ${token}`, "X-Api-Key": API_TOKEN },
-  });
+  const res = await fetch(`${API_URL}/api/events`, { headers: authHeaders() });
   return res.json();
 }
 
 export async function getUsers() {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${API_URL}/api/users`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await fetch(`${API_URL}/api/users`, { headers: authHeaders() });
   return res.json();
 }
 
-export async function createUser(user: { email: string; password: string; role: string }) {
-  const token = localStorage.getItem("token");
+export async function createUser(user: { email: string; role: string }) {
   const res = await fetch(`${API_URL}/api/users`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    headers: authHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(user),
   });
   return res.json();
 }
 
 export async function deleteUser(id: string) {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${API_URL}/api/users/${id}`, {
+  const res = await fetch(`${API_URL}/api/users/${encodeURIComponent(id)}`, {
     method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: authHeaders(),
   });
   return res.json();
 }

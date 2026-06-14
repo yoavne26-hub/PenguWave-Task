@@ -1,14 +1,13 @@
 import { useState } from "react";
 import mockEvents from "../../data/mock_events.json";
 import { SecurityEvent } from "../types";
-import { sanitizeHtml } from "../utils";
 
 export default function EventsPage() {
   const [search, setSearch] = useState("");
   const [severityFilter, setSeverityFilter] = useState("ALL");
   const [selectedEvent, setSelectedEvent] = useState<SecurityEvent | null>(null);
 
-  const events = mockEvents as SecurityEvent[];
+  const events = mockEvents as unknown as SecurityEvent[];
 
   const filtered = events.filter((e) => {
     const matchesSearch =
@@ -51,12 +50,7 @@ export default function EventsPage() {
 
       {search && (
         <p>
-          <span
-            dangerouslySetInnerHTML={{
-              __html: sanitizeHtml("Showing results for: <strong>" + search + "</strong>"),
-            }}
-          />
-          {" "}({filtered.length} events)
+          Showing results for: <strong>{search}</strong> ({filtered.length} events)
         </p>
       )}
 
@@ -132,12 +126,8 @@ export default function EventsPage() {
           <p>
             <strong>Description:</strong>
           </p>
-          {/* render rich text descriptions */}
-          <div
-            ref={(el) => {
-              if (el) el.innerHTML = sanitizeHtml(selectedEvent.description);
-            }}
-          />
+          {/* Plain text only — descriptions are untrusted input, never HTML. */}
+          <p style={{ whiteSpace: "pre-wrap" }}>{selectedEvent.description}</p>
           <p>
             <strong>Asset:</strong> {selectedEvent.assetHostname} ({selectedEvent.assetIp})
           </p>

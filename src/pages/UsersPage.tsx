@@ -6,31 +6,28 @@ export default function UsersPage() {
   // if (user.role !== 'admin') return null;
 
   const [users, setUsers] = useState<User[]>([
-    { id: "1", email: "admin@penguwave.io", role: "admin", status: "active", password: "admin123" },
-    { id: "2", email: "analyst@penguwave.io", role: "analyst", status: "active", password: "pass456" },
-    { id: "3", email: "viewer@penguwave.io", role: "viewer", status: "disabled", password: "view789" },
+    { id: "1", email: "admin@penguwave.io", role: "admin", status: "active" },
+    { id: "2", email: "analyst@penguwave.io", role: "analyst", status: "active" },
+    { id: "3", email: "viewer@penguwave.io", role: "viewer", status: "disabled" },
   ]);
 
   const [showForm, setShowForm] = useState(false);
   const [newEmail, setNewEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState("analyst");
 
   const handleAddUser = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newEmail || !newPassword) return;
+    if (!newEmail) return;
 
     const newUser: User = {
       id: String(Date.now()),
       email: newEmail,
       role: newRole,
       status: "active",
-      password: newPassword,
     };
 
     setUsers([...users, newUser]);
     setNewEmail("");
-    setNewPassword("");
     setNewRole("analyst");
     setShowForm(false);
   };
@@ -62,16 +59,6 @@ export default function UsersPage() {
                 required
               />
             </div>
-            <div style={{ marginBottom: 8 }}>
-              <label>Password</label>
-              <input
-                type="text"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="password"
-                required
-              />
-            </div>
             <div style={{ marginBottom: 12 }}>
               <label>Role</label>
               <select value={newRole} onChange={(e) => setNewRole(e.target.value)}>
@@ -93,7 +80,6 @@ export default function UsersPage() {
             <th>Email</th>
             <th>Role</th>
             <th>Status</th>
-            <th>Password</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -107,7 +93,6 @@ export default function UsersPage() {
                   {user.status}
                 </span>
               </td>
-              <td style={{ fontFamily: "monospace", fontSize: 13 }}>{user.password}</td>
               <td>
                 <a
                   href="#"
