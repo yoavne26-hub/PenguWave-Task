@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useEvents } from "@/hooks/useEvents";
-import { useEventFilters, type SortKey } from "@/hooks/useEventFilters";
+import { useEventFilters, type FilterState, type SortKey } from "@/hooks/useEventFilters";
 import { useRole } from "@/auth/RoleContext";
 import { EventModal } from "@/components/EventModal";
 import { SeverityBadge } from "@/components/SeverityBadge";
@@ -26,13 +26,26 @@ const COLUMNS: { key: SortKey; label: string }[] = [
 export default function EventsPage() {
   const { status, events, repairedCount, duplicateCount, error, reload } = useEvents();
   const { permissions } = useRole();
-  const filters = useEventFilters(events);
   const location = useLocation();
 
-  // Deep-link from the Overview "recent" list opens the drawer for that event.
+  // Drill-down from the Overview arrives as navigation state. Seed the filter on
+  // first mount, and re-apply when a *new* navigation occurs (same route reused).
+  const navState = location.state as { focusId?: string; filter?: Partial<FilterState> } | null;
+  const navFilter = navState?.filter;
+  const filters = useEventFilters(events, navFilter);
+  const { applyFilters } = filters;
+  const lastNavKey = useRef(location.key);
+  useEffect(() => {
+    if (location.key !== lastNavKey.current) {
+      lastNavKey.current = location.key;
+      if (navFilter) applyFilters(navFilter);
+    }
+  }, [location.key, navFilter, applyFilters]);
+
+  // Deep-link from the Overview "recent" list opens the modal for that event.
   // `manualSelection` is undefined until the user interacts, so the derived
   // selection defaults to the deep-linked event without needing an effect.
-  const focusId = (location.state as { focusId?: string } | null)?.focusId;
+  const focusId = navState?.focusId;
   const [manualSelection, setManualSelection] = useState<SecurityEvent | null | undefined>(undefined);
   const autoSelected = focusId ? events.find((e) => e.id === focusId) ?? null : null;
   const selected = manualSelection === undefined ? autoSelected : manualSelection;

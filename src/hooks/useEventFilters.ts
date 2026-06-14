@@ -19,8 +19,8 @@ export interface FilterChip {
 
 const EMPTY: FilterState = { search: "", severities: [], tag: null, host: null };
 
-export function useEventFilters(events: SecurityEvent[]) {
-  const [filters, setFilters] = useState<FilterState>(EMPTY);
+export function useEventFilters(events: SecurityEvent[], initial?: Partial<FilterState>) {
+  const [filters, setFilters] = useState<FilterState>(() => ({ ...EMPTY, ...initial }));
   const [sortKey, setSortKey] = useState<SortKey>("time");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
@@ -133,5 +133,7 @@ export function useEventFilters(events: SecurityEvent[]) {
     setHost: (host: string | null) => setFilters((f) => ({ ...f, host })),
     toggleSort,
     clearAll: () => setFilters(EMPTY),
+    /** Replace the whole filter set — used by drill-downs from the Overview. */
+    applyFilters: (partial: Partial<FilterState>) => setFilters({ ...EMPTY, ...partial }),
   };
 }

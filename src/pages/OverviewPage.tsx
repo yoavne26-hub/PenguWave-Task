@@ -8,6 +8,8 @@ import { SeverityBadge } from "@/components/SeverityBadge";
 import { EmptyState, ErrorState, RepairedBadge, WaveLoader } from "@/components/states";
 import { orDash, relativeTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { IconChevronRight } from "@/components/icons";
+import type { FilterState } from "@/hooks/useEventFilters";
 import type { NormalizedSeverity } from "@/types";
 
 const SEV_BAR: Record<NormalizedSeverity, string> = {
@@ -18,14 +20,44 @@ const SEV_BAR: Record<NormalizedSeverity, string> = {
   UNKNOWN: "bg-sev-unknown",
 };
 
-function StatCard({ label, value, hint }: { label: string; value: number; hint?: string }) {
+function StatCard({
+  label,
+  value,
+  hint,
+  onClick,
+}: {
+  label: string;
+  value: number;
+  hint?: string;
+  onClick?: () => void;
+}) {
+  const body = (
+    <CardContent className="p-5">
+      <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">{label}</p>
+      <p className="mt-1 text-3xl font-bold tabular-nums">{value}</p>
+      {hint && <p className="mt-1 text-xs text-ink-muted">{hint}</p>}
+      {onClick && (
+        <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-ice-bright">
+          View events <IconChevronRight />
+        </span>
+      )}
+    </CardContent>
+  );
+  if (!onClick) return <Card>{body}</Card>;
   return (
-    <Card>
-      <CardContent className="p-5">
-        <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">{label}</p>
-        <p className="mt-1 text-3xl font-bold tabular-nums">{value}</p>
-        {hint && <p className="mt-1 text-xs text-ink-muted">{hint}</p>}
-      </CardContent>
+    <Card
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className="cursor-pointer transition-all hover:-translate-y-0.5 hover:ring-1 hover:ring-ice-bright/40"
+    >
+      {body}
     </Card>
   );
 }
@@ -34,6 +66,9 @@ export default function OverviewPage() {
   const { status, events, repairedCount, duplicateCount, error, reload } = useEvents();
   const metrics = useMemo(() => computeOverview(events), [events]);
   const navigate = useNavigate();
+
+  // Drill down into the Events table, pre-filtered to a slice.
+  const drillTo = (filter: Partial<FilterState>) => navigate("/events", { state: { filter } });
 
   if (status === "loading") {
     return (
@@ -74,11 +109,12 @@ export default function OverviewPage() {
       <PageTitle repaired={repairedCount} duplicates={duplicateCount} />
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total Events" value={metrics.total} />
+        <StatCard label="Total Events" value={metrics.total} onClick={() => drillTo({})} />
         <StatCard
           label="Needs Attention"
           value={metrics.needsAttention}
           hint="Critical + High (only 1 critical exists)"
+          onClick={() => drillTo({ severities: ["CRITICAL", "HIGH"] })}
         />
         <StatCard label="Affected Hosts" value={metrics.affectedHosts} />
         <StatCard label="Affected Identities" value={metrics.affectedIdentities} />
@@ -89,9 +125,14 @@ export default function OverviewPage() {
           <CardHeader>
             <CardTitle>Severity Distribution</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-1.5">
             {metrics.bySeverity.map((s) => (
-              <div key={s.severity} className="flex items-center gap-3">
+              <button
+                key={s.severity}
+                onClick={() => drillTo({ severities: [s.severity] })}
+                className="flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-white/5"
+                title={`View ${s.severity} events`}
+              >
                 <div className="w-20 shrink-0">
                   <SeverityBadge severity={s.severity} />
                 </div>
@@ -104,7 +145,7 @@ export default function OverviewPage() {
                 <span className="w-16 shrink-0 text-right text-sm tabular-nums text-ink-muted">
                   {s.count} · {Math.round(s.share * 100)}%
                 </span>
-              </div>
+              </button>
             ))}
           </CardContent>
         </Card>
@@ -113,9 +154,14 @@ export default function OverviewPage() {
           <CardHeader>
             <CardTitle>Top Affected Hosts</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-1">
             {metrics.topHosts.map((h) => (
-              <div key={h.label} className="flex items-center gap-3">
+              <button
+                key={h.label}
+                onClick={() => drillTo({ host: h.label })}
+                className="flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-white/5"
+                title={`View events on ${h.label}`}
+              >
                 <span className="flex-1 truncate font-mono text-sm" title={h.label}>
                   {h.label}
                 </span>
@@ -126,7 +172,7 @@ export default function OverviewPage() {
                   />
                 </div>
                 <span className="w-6 text-right text-sm tabular-nums text-ink-muted">{h.count}</span>
-              </div>
+              </button>
             ))}
           </CardContent>
         </Card>
@@ -139,13 +185,15 @@ export default function OverviewPage() {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             {metrics.topTags.map((t) => (
-              <span
+              <button
                 key={t.label}
-                className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-xs ring-1 ring-inset ring-hairline"
+                onClick={() => drillTo({ tag: t.label })}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-2.5 py-1 text-xs ring-1 ring-inset ring-hairline transition-colors hover:bg-ice/15 hover:text-ice-bright hover:ring-ice/40"
+                title={`View events tagged ${t.label}`}
               >
                 {t.label}
                 <span className="text-ink-muted tabular-nums">{t.count}</span>
-              </span>
+              </button>
             ))}
           </CardContent>
         </Card>
