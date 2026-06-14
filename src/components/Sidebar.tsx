@@ -39,7 +39,7 @@ export function Sidebar() {
         </span>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1" aria-label="Primary">
+      <nav className="flex flex-1 flex-col gap-1" aria-label="Primary" data-tour="nav">
         <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-muted/70">
           Navigation
         </p>
@@ -81,7 +81,7 @@ export function Sidebar() {
               <p className="mt-0.5 text-xs text-amber-accent">Read-only persona</p>
             )}
           </div>
-          <Button variant="outline" size="sm" className="w-full" onClick={signOut}>
+          <Button variant="outline" size="sm" className="w-full" onClick={signOut} data-tour="persona">
             <IconSignOut /> Switch persona
           </Button>
           <p className="px-1 text-[11px] leading-snug text-ink-muted/80">

@@ -65,7 +65,7 @@ export default function EventsPage() {
       <Header repaired={repairedCount} duplicates={duplicateCount} />
 
       {/* Toolbar */}
-      <div className="space-y-3">
+      <div className="space-y-3" data-tour="filters">
         <div className="flex flex-wrap items-center gap-3">
           <Input
             type="search"
@@ -98,7 +98,7 @@ export default function EventsPage() {
             ))}
           </select>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2" data-tour="export">
             {permissions.canExport ? (
               <>
                 <Button variant="outline" size="sm" onClick={() => exportCsv(filters.result)}>

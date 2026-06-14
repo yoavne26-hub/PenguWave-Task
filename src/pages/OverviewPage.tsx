@@ -108,7 +108,7 @@ export default function OverviewPage() {
     <div className="space-y-6">
       <PageTitle repaired={repairedCount} duplicates={duplicateCount} />
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-tour="overview-stats">
         <StatCard label="Total Events" value={metrics.total} onClick={() => drillTo({})} />
         <StatCard
           label="Needs Attention"
@@ -121,7 +121,7 @@ export default function OverviewPage() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
+        <Card data-tour="severity">
           <CardHeader>
             <CardTitle>Severity Distribution</CardTitle>
           </CardHeader>
