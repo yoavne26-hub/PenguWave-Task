@@ -121,8 +121,8 @@ function CredentialGate({
       onSuccess();
       return;
     }
-    setError("Incorrect username or password for this persona.");
-    setPassword("");
+    // The only failure is an empty field — this gate accepts any credentials.
+    setError("Enter any username and password to continue.");
     passwordRef.current?.focus();
   }
 
@@ -190,7 +190,8 @@ function CredentialGate({
         </div>
 
         <p className="text-center text-[11px] leading-snug text-ink-muted/70">
-          Mock sign-in for the demo. Credentials are documented in the README.
+          Mock sign-in — <strong>any</strong> username and password are accepted.
+          This only visualizes a persona's access level; it is not real authentication.
         </p>
       </form>
     </Card>

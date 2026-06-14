@@ -28,7 +28,10 @@ legible sidebar, and a first-time guided tour.
 
 ## Features
 
-### 1. Credential gate (per-persona, hidden creds)
+### 1. Credential gate (visualization only — accepts any input)
+> Revised per user direction ("always let them in"): the gate accepts ANY
+> non-empty username + password. It only simulates a persona's access level;
+> it enforces nothing. Password is read in memory, never logged or persisted.
 - `src/auth/credentials.ts` — `DEMO_CREDENTIALS: Record<Role, {username, password}>`,
   commented as mock-only, documented in README (not shown on screen).
 - `verifyCredentials(role, username, password)` — pure, in-memory compare.
