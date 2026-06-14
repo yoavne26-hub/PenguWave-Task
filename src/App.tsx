@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { RoleProvider, useRole } from "@/auth/RoleContext";
 import { Sidebar } from "@/components/Sidebar";
 import { RoleEntrance } from "@/components/RoleEntrance";
@@ -12,9 +12,17 @@ import EventsPage from "@/pages/EventsPage";
 import UsersPage from "@/pages/UsersPage";
 import NotFound from "@/pages/NotFound";
 
+const PAGE_TITLES: Record<string, string> = {
+  "/overview": "Overview",
+  "/events": "Events",
+  "/users": "Users",
+};
+
 function Shell() {
   const { role, permissions } = useRole();
+  const { pathname } = useLocation();
   const [navOpen, setNavOpen] = useState(false);
+  const pageTitle = PAGE_TITLES[pathname] ?? "PenguWave";
 
   // Esc closes the mobile nav drawer.
   useEffect(() => {
@@ -63,7 +71,8 @@ function Shell() {
               >
                 <IconMenu style={{ fontSize: "1.15rem" }} />
               </Button>
-              <span className="hidden rounded-full bg-white/5 px-2.5 py-1 text-[11px] text-ink-muted ring-1 ring-inset ring-hairline sm:inline">
+              <span className="text-sm font-semibold">{pageTitle}</span>
+              <span className="hidden rounded-full bg-white/5 px-2.5 py-1 text-[11px] text-ink-muted ring-1 ring-inset ring-hairline lg:inline">
                 Demo · roles are a UX simulation, not real authorization
               </span>
             </div>
