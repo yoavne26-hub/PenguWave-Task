@@ -23,11 +23,11 @@ const NAV: NavItem[] = [
   { to: "/users", label: "Users", icon: IconUsers, adminOnly: true },
 ];
 
-export function Sidebar() {
+export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const { role, permissions } = useRole();
 
   return (
-    <aside className="frost flex w-60 shrink-0 flex-col gap-7 rounded-none border-y-0 border-l-0 p-4">
+    <aside className="frost flex h-full w-60 shrink-0 flex-col gap-7 rounded-none border-y-0 border-l-0 p-4">
       <div className="flex items-center gap-2.5 px-1 pt-2">
         <span className="grid h-9 w-9 place-items-center rounded-lg bg-ice/15 ring-1 ring-ice-bright/25">
           <PenguinMark className="text-ice-bright" style={{ fontSize: "1.4rem" }} />
@@ -47,6 +47,7 @@ export function Sidebar() {
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={onNavigate}
               className={({ isActive }) =>
                 cn(
                   "relative flex items-center gap-3 rounded-md py-2.5 pl-3 pr-3 text-sm font-medium transition-colors",
