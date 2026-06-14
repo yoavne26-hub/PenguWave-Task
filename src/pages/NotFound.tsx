@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 
 export default function NotFound() {
   return (
-    <div style={{ textAlign: "center", padding: "80px 20px" }}>
-      <pre style={{ fontSize: 14, lineHeight: 1.3, display: "inline-block", textAlign: "left" }}>
+    <div className="py-20 text-center">
+      <pre className="inline-block text-left text-sm leading-tight text-ink-muted">
 {`
        .--.
       |o_o |
@@ -14,14 +14,12 @@ export default function NotFound() {
    \\___)=(___/
 `}
       </pre>
-      <h1 style={{ fontSize: 48, margin: "20px 0 10px", color: "#333" }}>404</h1>
-      <p style={{ fontSize: 18, color: "#666", marginBottom: 8 }}>
-        This penguin got lost at sea 🐧
-      </p>
-      <p style={{ color: "#999", marginBottom: 30 }}>
+      <h1 className="mb-2 mt-5 text-5xl font-bold">404</h1>
+      <p className="text-lg text-ink-muted">This penguin got lost at sea 🐧</p>
+      <p className="mb-8 mt-1 text-sm text-ink-muted/80">
         The page you're looking for doesn't exist or has been moved.
       </p>
-      <Link to="/events" style={{ color: "#0066cc" }}>
+      <Link to="/overview" className="text-ice-bright hover:underline">
         ← Back to shore
       </Link>
     </div>
