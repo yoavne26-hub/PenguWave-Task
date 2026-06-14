@@ -113,7 +113,7 @@ function CredentialGate({
   const [error, setError] = useState<string | null>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     // Verify in memory only. The password is never logged or persisted.
     if (verifyCredentials(role, username, password)) {
