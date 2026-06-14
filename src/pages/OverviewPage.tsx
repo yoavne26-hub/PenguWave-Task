@@ -9,6 +9,7 @@ import { EmptyState, ErrorState, RepairedBadge, WaveLoader } from "@/components/
 import { orDash, relativeTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { IconChevronRight } from "@/components/icons";
+import { SeverityDonut } from "@/components/SeverityDonut";
 import type { FilterState } from "@/hooks/useEventFilters";
 import type { NormalizedSeverity } from "@/types";
 
@@ -125,7 +126,9 @@ export default function OverviewPage() {
           <CardHeader>
             <CardTitle>Severity Distribution</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-1.5">
+          <CardContent className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
+            <SeverityDonut data={metrics.bySeverity} total={metrics.total} />
+            <div className="w-full flex-1 space-y-1.5">
             {metrics.bySeverity.map((s) => (
               <button
                 key={s.severity}
@@ -147,6 +150,7 @@ export default function OverviewPage() {
                 </span>
               </button>
             ))}
+            </div>
           </CardContent>
         </Card>
 

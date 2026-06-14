@@ -187,7 +187,48 @@ export default function EventsPage() {
           <p className="text-xs text-ink-muted">
             Showing {filters.result.length} of {events.length} events
           </p>
-          <div className="overflow-x-auto rounded-xl border border-hairline">
+
+          {/* Mobile: stacked cards. */}
+          <ul className="space-y-2 sm:hidden">
+            {filters.result.map((event) => (
+              <li key={event.id}>
+                <button
+                  onClick={() => setSelected(event)}
+                  className="block w-full rounded-xl border border-hairline bg-white/[0.02] p-3 text-left transition-colors hover:bg-white/[0.05]"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <SeverityBadge severity={event.severity} />
+                    <span
+                      className="text-xs text-ink-muted"
+                      title={absoluteTime(event.parsedDate, event.timestamp)}
+                    >
+                      {event.isValidTime ? relativeTime(event.parsedDate) : "invalid"}
+                    </span>
+                  </div>
+                  <p className="mt-2 font-medium leading-snug">{event.title}</p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 font-mono text-xs text-ink-muted">
+                    <span className="truncate">{orDash(event.assetHostname)}</span>
+                    <span>{orDash(event.sourceIp)}</span>
+                  </div>
+                  {event.tags.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {event.tags.slice(0, 4).map((t) => (
+                        <span key={t} className="rounded bg-white/5 px-1.5 py-0.5 text-[11px] text-ink-muted">
+                          {t}
+                        </span>
+                      ))}
+                      {event.tags.length > 4 && (
+                        <span className="text-[11px] text-ink-muted">+{event.tags.length - 4}</span>
+                      )}
+                    </div>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          {/* Desktop: dense table. */}
+          <div className="hidden overflow-x-auto rounded-xl border border-hairline sm:block">
             <table className="w-full border-collapse text-sm">
               <thead className="sticky top-0 bg-surface-2/80 backdrop-blur">
                 <tr className="text-left text-xs uppercase tracking-wide text-ink-muted">

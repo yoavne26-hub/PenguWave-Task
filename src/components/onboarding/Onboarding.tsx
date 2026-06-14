@@ -112,7 +112,7 @@ export function HelpButton() {
       data-tour="help"
       aria-label="Open the guided tour"
     >
-      <IconHelp /> Help & tour
+      <IconHelp /> <span className="hidden sm:inline">Help &amp; tour</span>
     </Button>
   );
 }

@@ -2,11 +2,9 @@ import { NavLink } from "react-router-dom";
 import { useRole } from "@/auth/RoleContext";
 import { ROLE_LABELS } from "@/auth/roles";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import {
   IconEvents,
   IconOverview,
-  IconSignOut,
   IconUsers,
   PenguinMark,
   type IconComponent,
@@ -25,11 +23,11 @@ const NAV: NavItem[] = [
   { to: "/users", label: "Users", icon: IconUsers, adminOnly: true },
 ];
 
-export function Sidebar() {
-  const { role, permissions, signOut } = useRole();
+export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+  const { role, permissions } = useRole();
 
   return (
-    <aside className="frost flex w-60 shrink-0 flex-col gap-7 rounded-none border-y-0 border-l-0 p-4">
+    <aside className="frost flex h-full w-60 shrink-0 flex-col gap-7 rounded-none border-y-0 border-l-0 p-4">
       <div className="flex items-center gap-2.5 px-1 pt-2">
         <span className="grid h-9 w-9 place-items-center rounded-lg bg-ice/15 ring-1 ring-ice-bright/25">
           <PenguinMark className="text-ice-bright" style={{ fontSize: "1.4rem" }} />
@@ -49,6 +47,7 @@ export function Sidebar() {
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={onNavigate}
               className={({ isActive }) =>
                 cn(
                   "relative flex items-center gap-3 rounded-md py-2.5 pl-3 pr-3 text-sm font-medium transition-colors",
@@ -73,21 +72,18 @@ export function Sidebar() {
       </nav>
 
       {role && (
-        <div className="space-y-3 border-t border-hairline pt-4">
+        <div className="border-t border-hairline pt-4">
           <div className="px-1">
             <p className="text-[11px] uppercase tracking-wide text-ink-muted">Signed in as</p>
             <p className="text-sm font-semibold">{ROLE_LABELS[role].title}</p>
             {permissions.readOnly && (
               <p className="mt-0.5 text-xs text-amber-accent">Read-only persona</p>
             )}
+            <p className="mt-2 text-[11px] leading-snug text-ink-muted/80">
+              Switch persona from the menu in the top bar. Roles are a{" "}
+              <strong>UX simulation</strong>, not real authorization.
+            </p>
           </div>
-          <Button variant="outline" size="sm" className="w-full" onClick={signOut} data-tour="persona">
-            <IconSignOut /> Switch persona
-          </Button>
-          <p className="px-1 text-[11px] leading-snug text-ink-muted/80">
-            Role gating here is a <strong>UX simulation</strong>, not real
-            authorization. Enforcement belongs on a backend.
-          </p>
         </div>
       )}
     </aside>
