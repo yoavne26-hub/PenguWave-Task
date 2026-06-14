@@ -7,6 +7,9 @@ import type { SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
+/** Shape of every icon export — handy for icon-by-role maps. */
+export type IconComponent = (props: IconProps) => React.JSX.Element;
+
 function Svg({ children, ...props }: IconProps) {
   return (
     <svg

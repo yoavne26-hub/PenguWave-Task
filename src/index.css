@@ -50,6 +50,28 @@
   50% { transform: translateY(-6px); }
 }
 
+/* Entrance ocean scene -------------------------------------------------- */
+@keyframes drift {
+  from { background-position-x: 0; }
+  to { background-position-x: 1440px; }
+}
+
+/* Seamless wave scroll for the inline-SVG ribbons (svg is 200% wide). */
+@keyframes wave-flow {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(-0.5deg); }
+  50% { transform: translateY(-10px) rotate(0.5deg); }
+}
+
+@keyframes aurora {
+  0%, 100% { opacity: 0.35; transform: translateX(-3%); }
+  50% { opacity: 0.6; transform: translateX(3%); }
+}
+
 @layer base {
   html {
     color-scheme: dark;
@@ -88,5 +110,41 @@
     background-color: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(12px);
     border: 1px solid var(--color-hairline);
+  }
+
+  /* Entrance ocean scene layers. */
+  .ocean-wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-repeat: repeat-x;
+    background-position: bottom;
+    will-change: background-position;
+    animation: drift linear infinite;
+  }
+  .ocean-bob {
+    animation: bob ease-in-out infinite;
+    will-change: transform;
+  }
+  .ocean-aurora {
+    animation: aurora ease-in-out infinite;
+    will-change: opacity, transform;
+  }
+  .wave-flow {
+    width: 200%;
+    animation: wave-flow linear infinite;
+    will-change: transform;
+  }
+}
+
+/* Respect reduced-motion: keep the scene, drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .ocean-wave,
+  .ocean-bob,
+  .ocean-aurora,
+  .wave-flow,
+  [class*="animate-"] {
+    animation: none !important;
   }
 }

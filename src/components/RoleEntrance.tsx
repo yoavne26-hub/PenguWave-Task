@@ -5,15 +5,26 @@ import { verifyCredentials } from "@/auth/credentials";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EntranceBackground } from "@/components/EntranceBackground";
 import {
   IconArrowLeft,
   IconChevronRight,
+  IconEvents,
   IconLock,
+  IconOverview,
   IconUser,
+  IconUsers,
   PenguinMark,
+  type IconComponent,
 } from "@/components/icons";
 
 const ORDER: Role[] = ["analyst", "admin", "viewer"];
+
+const ROLE_ICON: Record<Role, IconComponent> = {
+  analyst: IconEvents,
+  admin: IconUsers,
+  viewer: IconOverview,
+};
 
 /** Persona picker + mock credential gate shown when no role is selected. */
 export function RoleEntrance() {
@@ -21,17 +32,23 @@ export function RoleEntrance() {
   const [selected, setSelected] = useState<Role | null>(null);
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-3xl space-y-8">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden p-6">
+      <EntranceBackground />
+      <div className="relative z-10 w-full max-w-3xl space-y-8">
         <header className="space-y-3 text-center">
-          <div className="flex items-center justify-center gap-2 text-2xl font-bold tracking-tight">
-            <PenguinMark className="text-ice-bright" style={{ fontSize: "1.75rem" }} />
+          <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ice-cyan/80">
+            Security Operations Portal
+          </p>
+          <div className="flex items-center justify-center gap-2.5 text-3xl font-bold tracking-tight">
+            <span className="grid h-11 w-11 place-items-center rounded-xl bg-ice/15 ring-1 ring-ice-bright/30">
+              <PenguinMark className="text-ice-bright" style={{ fontSize: "1.9rem" }} />
+            </span>
             Pengu<span className="text-ice-bright">Wave</span>
           </div>
           <p className="text-ink-muted">
             {selected
               ? `Sign in to the console as ${ROLE_LABELS[selected].title}.`
-              : "Security Operations Portal — choose a demo persona to enter the console."}
+              : "Choose a demo persona to enter the console."}
           </p>
         </header>
 
@@ -43,22 +60,32 @@ export function RoleEntrance() {
           />
         ) : (
           <div className="grid gap-4 sm:grid-cols-3">
-            {ORDER.map((role) => (
-              <button
-                key={role}
-                onClick={() => setSelected(role)}
-                className="group text-left focus-visible:outline-none"
-              >
-                <Card className="h-full cursor-pointer p-5 transition-all hover:-translate-y-0.5 hover:ring-1 hover:ring-ice-bright/50 group-focus-visible:ring-2 group-focus-visible:ring-ice-bright">
-                  <h2 className="text-lg font-semibold text-ink">{ROLE_LABELS[role].title}</h2>
-                  <p className="mt-2 text-sm text-ink-muted">{ROLE_LABELS[role].blurb}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-ice-bright">
-                    Sign in as {ROLE_LABELS[role].title}
-                    <IconChevronRight />
-                  </span>
-                </Card>
-              </button>
-            ))}
+            {ORDER.map((role) => {
+              const Icon = ROLE_ICON[role];
+              return (
+                <button
+                  key={role}
+                  onClick={() => setSelected(role)}
+                  className="group text-left focus-visible:outline-none"
+                >
+                  <Card className="relative h-full cursor-pointer overflow-hidden p-5 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-ice/10 hover:ring-1 hover:ring-ice-bright/50 group-focus-visible:ring-2 group-focus-visible:ring-ice-bright">
+                    <span
+                      aria-hidden
+                      className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-ice via-ice-bright to-ice-cyan opacity-70"
+                    />
+                    <span className="grid h-9 w-9 place-items-center rounded-lg bg-ice/15 text-ice-bright ring-1 ring-ice-bright/20">
+                      <Icon style={{ fontSize: "1.1rem" }} />
+                    </span>
+                    <h2 className="mt-3 text-lg font-semibold text-ink">{ROLE_LABELS[role].title}</h2>
+                    <p className="mt-1.5 text-sm text-ink-muted">{ROLE_LABELS[role].blurb}</p>
+                    <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-ice-bright">
+                      Sign in
+                      <IconChevronRight className="transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                  </Card>
+                </button>
+              );
+            })}
           </div>
         )}
 
