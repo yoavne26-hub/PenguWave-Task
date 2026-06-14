@@ -1,45 +1,45 @@
-import { useState, useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import LoginModal from "./components/LoginModal";
-import EventsPage from "./pages/EventsPage";
-import UsersPage from "./pages/UsersPage";
-import NotFound from "./pages/NotFound";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { RoleProvider, useRole } from "@/auth/RoleContext";
+import { Sidebar } from "@/components/Sidebar";
+import { RoleEntrance } from "@/components/RoleEntrance";
+import OverviewPage from "@/pages/OverviewPage";
+import EventsPage from "@/pages/EventsPage";
+import UsersPage from "@/pages/UsersPage";
+import NotFound from "@/pages/NotFound";
 
-// Skip the login modal during local development.
-const DEBUG_BYPASS_AUTH = false;
+function Shell() {
+  const { role, permissions } = useRole();
 
-function App() {
-  const [showLogin, setShowLogin] = useState(false);
-
-  // Show login modal on first visit
-  useEffect(() => {
-    if (DEBUG_BYPASS_AUTH) return;
-    const dismissed = sessionStorage.getItem("login-dismissed");
-    if (!dismissed) {
-      setShowLogin(true);
-    }
-  }, []);
-
-  const handleCloseLogin = () => {
-    sessionStorage.setItem("login-dismissed", "true");
-    setShowLogin(false);
-  };
+  // No persona selected → show the entrance picker (demo UX, not auth).
+  if (!role) return <RoleEntrance />;
 
   return (
-    <>
-      <Navbar onLoginClick={() => setShowLogin(true)} />
-      <div className="container">
-        <Routes>
-          <Route path="/" element={<Navigate to="/events" replace />} />
-          <Route path="/events" element={<EventsPage />} />
-          <Route path="/users" element={<UsersPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
-      {showLogin && <LoginModal onClose={handleCloseLogin} />}
-    </>
+    <div className="flex min-h-screen">
+      <Sidebar />
+      <main className="flex-1 overflow-x-hidden px-6 py-6 lg:px-8">
+        <div className="mx-auto max-w-6xl">
+          <Routes>
+            <Route path="/" element={<Navigate to="/overview" replace />} />
+            <Route path="/overview" element={<OverviewPage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route
+              path="/users"
+              element={
+                permissions.canManageUsers ? <UsersPage /> : <Navigate to="/overview" replace />
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </main>
+    </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <RoleProvider>
+      <Shell />
+    </RoleProvider>
+  );
+}
