@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useEvents } from "@/hooks/useEvents";
 import { useEventFilters, type SortKey } from "@/hooks/useEventFilters";
 import { useRole } from "@/auth/RoleContext";
-import { EventDrawer } from "@/components/EventDrawer";
+import { EventModal } from "@/components/EventModal";
 import { SeverityBadge } from "@/components/SeverityBadge";
 import { EmptyState, ErrorState, RepairedBadge, WaveLoader } from "@/components/states";
 import { Button } from "@/components/ui/button";
@@ -240,7 +240,7 @@ export default function EventsPage() {
         </>
       )}
 
-      <EventDrawer
+      <EventModal
         event={selected}
         allEvents={events}
         onClose={() => setSelected(null)}
