@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ *
+ * PenguWave theme — deep-ocean SOC console, ice-blue highlights.
+ * Single source of truth for design tokens. Dark-mode only for now.
+ * ------------------------------------------------------------------ */
+@theme {
+  /* Surfaces */
+  --color-bg-deep: #0a0f1e;
+  --color-bg-deeper: #0b1220;
+  --color-surface: #111a2e;
+  --color-surface-2: #16223c;
+
+  /* Ice-blue accent family */
+  --color-ice: #3b82f6;
+  --color-ice-bright: #38bdf8;
+  --color-ice-cyan: #22d3ee;
+  --color-amber-accent: #d97706;
+
+  /* Text */
+  --color-ink: #e5ecf5;
+  --color-ink-muted: #94a3b8;
+
+  /* Borders / hairlines */
+  --color-hairline: rgba(255, 255, 255, 0.10);
+
+  /* Severity (ordered by temperature, tuned for dark surfaces) */
+  --color-sev-critical: #f43f5e;
+  --color-sev-high: #f97316;
+  --color-sev-medium: #eab308;
+  --color-sev-low: #38bdf8;
+  --color-sev-unknown: #64748b;
+
+  /* Typography */
+  --font-sans: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, "SFMono-Regular", monospace;
+
+  /* Wave / sonar motion */
+  --animate-sonar: sonar 1.8s ease-out infinite;
+  --animate-wave: wave 2.4s ease-in-out infinite;
+}
+
+@keyframes sonar {
+  0% { transform: scale(0.4); opacity: 0.8; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+@keyframes wave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(56, 189, 248, 0.06), transparent 60%),
+      linear-gradient(180deg, var(--color-bg-deep) 0%, var(--color-bg-deeper) 100%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Tabular figures for data so columns don't jitter. */
+  .font-mono,
+  code,
+  pre {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Visible ice-blue focus ring everywhere. */
+  :focus-visible {
+    outline: 2px solid var(--color-ice-bright);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  /* Frosted-glass surface used by cards, the sidebar, and the drawer. */
+  .frost {
+    background-color: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--color-hairline);
+  }
+}
